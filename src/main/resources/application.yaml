@@ -1,0 +1,24 @@
+spring:
+  dataSource:
+    url: jdbc:postgresql://localhost:5432/blog_app_db
+    username: postgres
+    password: admin
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+jwt:
+  secret: 984hg493gh0439rthr0429uruj2309yh937gc763fe87t3f89723gf
+  lifetime: 1h
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
