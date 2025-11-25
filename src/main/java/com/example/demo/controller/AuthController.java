@@ -41,10 +41,10 @@ public class AuthController {
         return authService.createAuthToken(authRequest, response);
     }
 
-    @PutMapping("/login")
+    @PutMapping("/profile")
     public ResponseEntity<?> updateUser(@RequestBody UserUpdateRequest userUpdateRequest) {
         UserDto currentUser = userService.getCurrentUser();
-        return authService.updateUser(userUpdateRequest, currentUser.getId());
+        return userService.updateUsers(userUpdateRequest, currentUser.getId());
     }
 
     @PostMapping("/registration")

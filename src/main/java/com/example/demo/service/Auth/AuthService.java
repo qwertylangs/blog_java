@@ -92,10 +92,7 @@ public class AuthService {
         return createAuthToken(jwtRequest, response);
     }
 
-    public ResponseEntity<UserDto> updateUser (UserUpdateRequest userUpdateRequest, Long userId) {
 
-        return ResponseEntity.ok().body(userService.updateUser(userUpdateRequest, userId));
-    }
 
     public ResponseEntity<?> logout (HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from("auth-token", "")

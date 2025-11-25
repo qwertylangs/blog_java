@@ -26,7 +26,8 @@ public class ArticlesController {
     public ResponseEntity<ArticlesResponse> getAllArticles(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
-    ) {
+    )
+    {
         UserDto currentUser = userService.getCurrentUser();
         Sort sort = Sort.by("createdAt").descending().and(Sort.by("id").descending());
         PageRequest pageable = PageRequest.of(page, size, sort);
@@ -89,7 +90,8 @@ public class ArticlesController {
     @PostMapping
     public ResponseEntity<ArticleDTO> createArticle(
             @RequestBody CreateArticleRequest createArticleRequest
-    ) {
+    )
+    {
         return ResponseEntity.status(HttpStatus.CREATED).body(articleService.createArticle(createArticleRequest));
     }
 

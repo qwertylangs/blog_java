@@ -3,20 +3,19 @@ package com.example.demo.service.Auth;
 import com.example.demo.dtos.auth.UserDto;
 import com.example.demo.dtos.auth.UserRegistrationRequest;
 import com.example.demo.dtos.auth.UserUpdateRequest;
-import com.example.demo.exceptions.AppError;
 import com.example.demo.model.MyUser;
 import com.example.demo.model.Role;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -65,28 +64,38 @@ public class UserService {
         createNewUser(userRegistrationRequest, userRole);
     }
 
-    public UserDto updateUser (UserUpdateRequest userUpdateRequest, Long userId) {
+    public ResponseEntity<?> updateUsers(UserUpdateRequest userUpdateRequest, Long userId) {
         MyUser user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("USER not found"));
-        if (userUpdateRequest.getUsername() != null && !userUpdateRequest.getUsername().isBlank()) {
+        if (userUpdateRequest.getUsername() != null && !userUpdateRequest.getUsername().isBlank()
+                && !userRepository.existsByUsername(userUpdateRequest.getUsername()) ) {
             // проверять на уникальность
             user.setUsername(userUpdateRequest.getUsername());
         }
+        else{
+            return ResponseEntity.status(409).body("USER IS ALREADY EXISTS");
+        }
+
         if (userUpdateRequest.getPassword() != null && !userUpdateRequest.getPassword().isBlank()) {
             // проверять на уникальность АХАХХА
             user.setPassword(passwordEncoder.encode(userUpdateRequest.getPassword()));
         }
-        if (userUpdateRequest.getEmail() != null && !userUpdateRequest.getEmail().isBlank()) {
+        if (userUpdateRequest.getEmail() != null && !userUpdateRequest.getEmail().isBlank()
+                && !userRepository.existsByEmail(userUpdateRequest.getEmail())) {
             // проверять на уникальность
             user.setEmail(userUpdateRequest.getEmail());
         }
-        if (userUpdateRequest.getAvatarUrl() != null && !userUpdateRequest.getAvatarUrl().isBlank()) {
+        else{
+            return ResponseEntity.status(409).body("EMAIL IS ALREADY EXISTS");
+        }
+        if (userUpdateRequest.getAvatarUrl() != null && !userUpdateRequest.getAvatarUrl().isBlank() ) {
             user.setAvatarUrl(userUpdateRequest.getAvatarUrl());
         }
 
         MyUser updatedUser = userRepository.save(user);
 
         String[] roles = updatedUser.getRoles().stream().map(Role::getName).toArray(String[]::new);
-        return new UserDto(updatedUser.getId(), updatedUser.getUsername(), updatedUser.getEmail(), roles, updatedUser.getAvatarUrl());
+        UserDto userDto = new UserDto(user.getId(), user.getUsername(), user.getEmail(), roles, user.getAvatarUrl());
+        return ResponseEntity.ok(userDto);
     }
 
 

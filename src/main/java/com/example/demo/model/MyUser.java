@@ -11,6 +11,8 @@ import java.util.*;
 // помечает как данные в бд
 @Entity
 @Table(name = "users")
+//        uniqueConstraints = {
+//                @UniqueConstraint(columnNames = "username")}
 //@DynamicUpdate  // Обновляет только изменённые поля
 public class MyUser {
     @Id
