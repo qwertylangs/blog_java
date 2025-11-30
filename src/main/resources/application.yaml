@@ -1,9 +1,12 @@
 spring:
-  dataSource:
-    url: jdbc:postgresql://localhost:5432/mydb
+  config:
+    import: optional:file:.env[.properties]
 
-    username: postgres
-    password: 1234
+  dataSource:
+    url: ${DB_URL}
+
+    username: ${USERNAME}
+    password: ${PASSWORD}
 
     driver-class-name: org.postgresql.Driver
   jpa:
@@ -16,7 +19,7 @@ spring:
       hibernate:
         format_sql: true
 jwt:
-  secret: 984hg493gh0439rthr0429uruj2309yh937gc763fe87t3f89723gf
+  secret: ${JWT_SECRET}
   lifetime: 1h
 
 logging:

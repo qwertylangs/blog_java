@@ -3,11 +3,15 @@ package com.example.demo.service.Auth;
 import com.example.demo.dtos.auth.UserDto;
 import com.example.demo.dtos.auth.UserRegistrationRequest;
 import com.example.demo.dtos.auth.UserUpdateRequest;
+import com.example.demo.exceptions.ConflictException;
 import com.example.demo.model.MyUser;
 import com.example.demo.model.Role;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.ArticleService;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,6 +28,7 @@ public class UserService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
     public Optional<MyUser> findByUsername (String username) {
         return userRepository.findByUsername(username);
@@ -64,15 +69,17 @@ public class UserService {
         createNewUser(userRegistrationRequest, userRole);
     }
 
-    public ResponseEntity<?> updateUsers(UserUpdateRequest userUpdateRequest, Long userId) {
+    public ResponseEntity<UserDto> updateUsers(UserUpdateRequest userUpdateRequest, Long userId) {
         MyUser user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("USER not found"));
-        if (userUpdateRequest.getUsername() != null && !userUpdateRequest.getUsername().isBlank()
+
+        String username = userUpdateRequest.getUsername();
+        if (username != null && !username.isBlank()
                 && !userRepository.existsByUsername(userUpdateRequest.getUsername()) ) {
-            // проверять на уникальность
+
             user.setUsername(userUpdateRequest.getUsername());
         }
         else{
-            return ResponseEntity.status(409).body("USER IS ALREADY EXISTS");
+            throw new ConflictException("USER IS ALREADY EXISTS");
         }
 
         if (userUpdateRequest.getPassword() != null && !userUpdateRequest.getPassword().isBlank()) {
@@ -85,7 +92,7 @@ public class UserService {
             user.setEmail(userUpdateRequest.getEmail());
         }
         else{
-            return ResponseEntity.status(409).body("EMAIL IS ALREADY EXISTS");
+            throw new ConflictException("EMAIL IS ALREADY EXISTS");
         }
         if (userUpdateRequest.getAvatarUrl() != null && !userUpdateRequest.getAvatarUrl().isBlank() ) {
             user.setAvatarUrl(userUpdateRequest.getAvatarUrl());
