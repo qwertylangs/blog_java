@@ -73,27 +73,37 @@ public class UserService {
         MyUser user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("USER not found"));
 
         String username = userUpdateRequest.getUsername();
-        if (username != null && !username.isBlank()
-                && !userRepository.existsByUsername(userUpdateRequest.getUsername()) ) {
 
-            user.setUsername(userUpdateRequest.getUsername());
-        }
-        else{
+        if(username != null && !username.isBlank()){
+
+
+        if (userRepository.existsByUsername(username) ) {
+
             throw new ConflictException("USER IS ALREADY EXISTS");
         }
 
+
+            user.setUsername(username);
+        }
+
+
+
+
         if (userUpdateRequest.getPassword() != null && !userUpdateRequest.getPassword().isBlank()) {
-            // проверять на уникальность АХАХХА
             user.setPassword(passwordEncoder.encode(userUpdateRequest.getPassword()));
         }
-        if (userUpdateRequest.getEmail() != null && !userUpdateRequest.getEmail().isBlank()
-                && !userRepository.existsByEmail(userUpdateRequest.getEmail())) {
-            // проверять на уникальность
-            user.setEmail(userUpdateRequest.getEmail());
+
+        String email = userUpdateRequest.getEmail();
+        if(email != null && !email.isBlank()){
+
+
+            if(userRepository.existsByEmail(email)){
+                throw new ConflictException("EMAIL IS ALREADY EXISTS");
+            }
+
+            user.setEmail(email);
         }
-        else{
-            throw new ConflictException("EMAIL IS ALREADY EXISTS");
-        }
+
         if (userUpdateRequest.getAvatarUrl() != null && !userUpdateRequest.getAvatarUrl().isBlank() ) {
             user.setAvatarUrl(userUpdateRequest.getAvatarUrl());
         }

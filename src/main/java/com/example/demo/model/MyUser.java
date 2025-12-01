@@ -6,14 +6,12 @@ import lombok.*;
 
 import java.util.*;
 
-// сздает геттеры сеттеры и конструктор для final полей
+
 @Data
-// помечает как данные в бд
+
 @Entity
 @Table(name = "users")
-//        uniqueConstraints = {
-//                @UniqueConstraint(columnNames = "username")}
-//@DynamicUpdate  // Обновляет только изменённые поля
+
 public class MyUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

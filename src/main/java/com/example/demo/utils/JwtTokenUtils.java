@@ -22,6 +22,14 @@ public class JwtTokenUtils {
     @Value("${jwt.lifetime}")
     private Duration jwtLifetime;
 
+
+    public JwtTokenUtils(
+            @Value("${jwt.secret}") String secret,
+            @Value("${jwt.lifetime}") Duration jwtLifetime) {
+        this.secret = secret;
+        this.jwtLifetime = jwtLifetime;
+    }
+
     public String generateToken (UserDetails userDetails) {
         SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret)); // Декодируем секрет из Base64
 
