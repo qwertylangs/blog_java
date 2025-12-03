@@ -8,18 +8,14 @@ import com.example.demo.model.MyUser;
 import com.example.demo.model.Role;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
-import com.example.demo.service.ArticleService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -49,10 +45,30 @@ public class UserService {
     }
 
     public MyUser createNewUser (UserRegistrationRequest userRegistrationRequest, Role role) {
+        String username=userRegistrationRequest.getUsername();
+        String email=userRegistrationRequest.getEmail();
+        if(username != null && !username.isBlank()){
 
+
+            if (userRepository.existsByUsername(username) ) {
+
+                throw new ConflictException("USER IS ALREADY EXISTS");
+            }
+            MyUser user = new MyUser();
+
+            user.setUsername(userRegistrationRequest.getUsername());
+        }
+
+        if(email != null && !email.isBlank()){
+
+
+            if(userRepository.existsByEmail(email)){
+                throw new ConflictException("EMAIL IS ALREADY EXISTS");
+            }
+            MyUser user = new MyUser();
+            user.setEmail(email);
+        }
         MyUser user = new MyUser();
-        user.setUsername(userRegistrationRequest.getUsername());
-        user.setEmail(userRegistrationRequest.getEmail());
         user.setPassword(passwordEncoder.encode(userRegistrationRequest.getPassword()));
         List<Role> list = List.of(role);
         user.setRoles(list);
