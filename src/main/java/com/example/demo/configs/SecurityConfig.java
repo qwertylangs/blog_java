@@ -60,7 +60,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/login", "/api/registration").permitAll()
                         .anyRequest().authenticated()
                 )
-                //.addFilterAfter(new JwtRequestFilter(jwtTokenUtils), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new JwtRequestFilter(jwtTokenUtils), UsernamePasswordAuthenticationFilter.class)
                 //// не работает
                         .exceptionHandling(ex -> ex
                             .authenticationEntryPoint((request, response, authException) -> {
