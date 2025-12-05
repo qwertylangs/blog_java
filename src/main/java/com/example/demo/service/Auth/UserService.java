@@ -94,12 +94,10 @@ public class UserService {
 
             throw new ConflictException("USER IS ALREADY EXISTS");
         }
-        if(username == null || username.isBlank()){
+        if(username != null || !username.isBlank()){
 
-            throw new ConflictException("USER-POLE IS EMPTY");
+            user.setUsername(username);
         }
-
-        user.setUsername(username);
 
 
         if (userUpdateRequest.getPassword() != null && !userUpdateRequest.getPassword().isBlank()) {
@@ -111,12 +109,11 @@ public class UserService {
 
             throw new ConflictException("EMAIL IS ALREADY EXISTS");
         }
-        if(email == null || email.isBlank()){
-
-            throw new ConflictException("EMAIL-POLE IS EMPTY");
+        if(email != null || !email.isBlank()){
+            user.setEmail(email);
         }
 
-        user.setEmail(email);
+
         if (userUpdateRequest.getAvatarUrl() != null && !userUpdateRequest.getAvatarUrl().isBlank() ) {
             user.setAvatarUrl(userUpdateRequest.getAvatarUrl());
         }
