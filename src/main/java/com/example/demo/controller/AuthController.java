@@ -41,7 +41,7 @@ public class AuthController {
         return authService.createAuthToken(authRequest, response);
     }
 
-    @PutMapping("/profile")
+    @PutMapping("/login")
     public ResponseEntity<?> updateUser(@RequestBody UserUpdateRequest userUpdateRequest) {
         UserDto currentUser = userService.getCurrentUser();
         return userService.updateUsers(userUpdateRequest, currentUser.getId());

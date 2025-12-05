@@ -4,6 +4,7 @@ import com.example.demo.dtos.auth.UserDto;
 import com.example.demo.dtos.auth.UserRegistrationRequest;
 import com.example.demo.dtos.auth.UserUpdateRequest;
 import com.example.demo.exceptions.ConflictException;
+import com.example.demo.exceptions.IllegalArgumentException;
 import com.example.demo.model.MyUser;
 import com.example.demo.model.Role;
 import com.example.demo.repository.RoleRepository;
@@ -47,28 +48,27 @@ public class UserService {
     public MyUser createNewUser (UserRegistrationRequest userRegistrationRequest, Role role) {
         String username=userRegistrationRequest.getUsername();
         String email=userRegistrationRequest.getEmail();
-        if(username != null && !username.isBlank()){
-
-
-            if (userRepository.existsByUsername(username) ) {
-
-                throw new ConflictException("USER IS ALREADY EXISTS");
-            }
-            MyUser user = new MyUser();
-
-            user.setUsername(userRegistrationRequest.getUsername());
-        }
-
-        if(email != null && !email.isBlank()){
-
-
-            if(userRepository.existsByEmail(email)){
-                throw new ConflictException("EMAIL IS ALREADY EXISTS");
-            }
-            MyUser user = new MyUser();
-            user.setEmail(email);
-        }
         MyUser user = new MyUser();
+        if (userRepository.existsByUsername(username)) {
+
+            throw new ConflictException("USER IS ALREADY EXISTS");
+        }
+        if(username == null || username.isBlank()){
+
+            throw new ConflictException("USER-POLE IS EMPTY");
+        }
+        if(userRepository.existsByEmail(email)){
+
+            throw new ConflictException("EMAIL IS ALREADY EXISTS");
+        }
+        if(email == null || email.isBlank()){
+
+            throw new ConflictException("EMAIL-POLE IS EMPTY");
+        }
+
+        user.setEmail(email);
+        user.setUsername(userRegistrationRequest.getUsername());
+
         user.setPassword(passwordEncoder.encode(userRegistrationRequest.getPassword()));
         List<Role> list = List.of(role);
         user.setRoles(list);
@@ -90,19 +90,16 @@ public class UserService {
 
         String username = userUpdateRequest.getUsername();
 
-        if(username != null && !username.isBlank()){
-
-
-        if (userRepository.existsByUsername(username) ) {
+        if (userRepository.existsByUsername(username)) {
 
             throw new ConflictException("USER IS ALREADY EXISTS");
         }
+        if(username == null || username.isBlank()){
 
-
-            user.setUsername(username);
+            throw new ConflictException("USER-POLE IS EMPTY");
         }
 
-
+        user.setUsername(username);
 
 
         if (userUpdateRequest.getPassword() != null && !userUpdateRequest.getPassword().isBlank()) {
@@ -110,16 +107,16 @@ public class UserService {
         }
 
         String email = userUpdateRequest.getEmail();
-        if(email != null && !email.isBlank()){
+        if(userRepository.existsByEmail(email)){
 
+            throw new ConflictException("EMAIL IS ALREADY EXISTS");
+        }
+        if(email == null || email.isBlank()){
 
-            if(userRepository.existsByEmail(email)){
-                throw new ConflictException("EMAIL IS ALREADY EXISTS");
-            }
-
-            user.setEmail(email);
+            throw new ConflictException("EMAIL-POLE IS EMPTY");
         }
 
+        user.setEmail(email);
         if (userUpdateRequest.getAvatarUrl() != null && !userUpdateRequest.getAvatarUrl().isBlank() ) {
             user.setAvatarUrl(userUpdateRequest.getAvatarUrl());
         }
