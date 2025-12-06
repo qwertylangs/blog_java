@@ -67,7 +67,7 @@ public class UserService {
         }
 
         user.setEmail(email);
-        user.setUsername(userRegistrationRequest.getUsername());
+        user.setUsername(username);
 
         user.setPassword(passwordEncoder.encode(userRegistrationRequest.getPassword()));
         List<Role> list = List.of(role);
@@ -94,7 +94,7 @@ public class UserService {
 
             throw new ConflictException("USER IS ALREADY EXISTS");
         }
-        if(username != null || !username.isBlank()){
+        if(username != null && !username.isBlank()){
 
             user.setUsername(username);
         }
@@ -109,7 +109,7 @@ public class UserService {
 
             throw new ConflictException("EMAIL IS ALREADY EXISTS");
         }
-        if(email != null || !email.isBlank()){
+        if(email != null && !email.isBlank()){
             user.setEmail(email);
         }
 
