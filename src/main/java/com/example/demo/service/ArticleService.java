@@ -15,10 +15,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -92,6 +95,9 @@ public class ArticleService {
                 article.getUpdatedAt().toString(),
                 isFavoritedByUser(article, currentUserId),
                 article.getLikedByUsers().size(),
+                article.getLikedByUsers().stream()
+                        .map(MyUser::getUsername)
+                        .collect(Collectors.toList()),
                 new ArticleCreator(
                         article.getAuthor().getUsername(),
                         article.getAuthor().getAvatarUrl(),

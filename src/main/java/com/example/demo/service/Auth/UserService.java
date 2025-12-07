@@ -4,22 +4,19 @@ import com.example.demo.dtos.auth.UserDto;
 import com.example.demo.dtos.auth.UserRegistrationRequest;
 import com.example.demo.dtos.auth.UserUpdateRequest;
 import com.example.demo.exceptions.ConflictException;
+import com.example.demo.exceptions.IllegalArgumentException;
 import com.example.demo.model.MyUser;
 import com.example.demo.model.Role;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
-import com.example.demo.service.ArticleService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -49,10 +46,29 @@ public class UserService {
     }
 
     public MyUser createNewUser (UserRegistrationRequest userRegistrationRequest, Role role) {
-
+        String username=userRegistrationRequest.getUsername();
+        String email=userRegistrationRequest.getEmail();
         MyUser user = new MyUser();
-        user.setUsername(userRegistrationRequest.getUsername());
-        user.setEmail(userRegistrationRequest.getEmail());
+        if (userRepository.existsByUsername(username)) {
+
+            throw new ConflictException("USER IS ALREADY EXISTS");
+        }
+        if(username == null || username.isBlank()){
+
+            throw new ConflictException("USER-POLE IS EMPTY");
+        }
+        if(userRepository.existsByEmail(email)){
+
+            throw new ConflictException("EMAIL IS ALREADY EXISTS");
+        }
+        if(email == null || email.isBlank()){
+
+            throw new ConflictException("EMAIL-POLE IS EMPTY");
+        }
+
+        user.setEmail(email);
+        user.setUsername(username);
+
         user.setPassword(passwordEncoder.encode(userRegistrationRequest.getPassword()));
         List<Role> list = List.of(role);
         user.setRoles(list);
@@ -74,19 +90,14 @@ public class UserService {
 
         String username = userUpdateRequest.getUsername();
 
-        if(username != null && !username.isBlank()){
-
-
-        if (userRepository.existsByUsername(username) ) {
+        if (userRepository.existsByUsername(username)) {
 
             throw new ConflictException("USER IS ALREADY EXISTS");
         }
-
+        if(username != null && !username.isBlank()){
 
             user.setUsername(username);
         }
-
-
 
 
         if (userUpdateRequest.getPassword() != null && !userUpdateRequest.getPassword().isBlank()) {
@@ -94,15 +105,14 @@ public class UserService {
         }
 
         String email = userUpdateRequest.getEmail();
+        if(userRepository.existsByEmail(email)){
+
+            throw new ConflictException("EMAIL IS ALREADY EXISTS");
+        }
         if(email != null && !email.isBlank()){
-
-
-            if(userRepository.existsByEmail(email)){
-                throw new ConflictException("EMAIL IS ALREADY EXISTS");
-            }
-
             user.setEmail(email);
         }
+
 
         if (userUpdateRequest.getAvatarUrl() != null && !userUpdateRequest.getAvatarUrl().isBlank() ) {
             user.setAvatarUrl(userUpdateRequest.getAvatarUrl());

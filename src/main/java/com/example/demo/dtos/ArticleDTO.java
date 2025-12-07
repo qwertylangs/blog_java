@@ -2,8 +2,8 @@ package com.example.demo.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.apache.catalina.User;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +19,8 @@ public class ArticleDTO {
     private String updatedAt;
     private boolean favorite;
     private int favoritesCount;
+    private List<String> likedByUsers;
     private ArticleCreator author;
+
 }
 
