@@ -15,33 +15,15 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
 @Repository
 @Transactional
 public interface ArticleRepository extends JpaRepository<Article, Long>{
+    @Query("SELECT a FROM Article a JOIN a.tagList t WHERE t = :tag")
+    Page<Article> findByTag(@Param("tag") String tag, Pageable pageable);
 
-    @Query(
-            value = "SELECT DISTINCT a.* FROM articles a " +
-                    "INNER JOIN article_tags at ON a.id = at.article_id " +
-                    "WHERE at.tags IN :tag " +
-                    "ORDER BY a.created_at DESC",
-            countQuery = "SELECT COUNT(DISTINCT a.id) FROM articles a " +
-                    "INNER JOIN article_tags at ON a.id = at.article_id " +
-                    "WHERE at.tags IN :tags",
-            nativeQuery = true
-    )
- List<Article> findByAnyTagNative(@Param("tag") List<String> tag);
+    @Query("SELECT a FROM Article a JOIN a.tagList t WHERE t IN :tags")
+    Page<Article> findByTagsList(@Param("tags") Set<String> tags, Pageable pageable);
 
-
-
-    @Query(
-            value = "SELECT DISTINCT a.* FROM articles a " +
-                    "INNER JOIN article_tags at ON a.id = at.article_id " +
-                    "WHERE at.tags = :tag" +
-                    "ORDER BY a.created_at DESC",
-            countQuery = "SELECT COUNT(DISTINCT a.id) FROM articles a " +
-                    "INNER JOIN article_tags at ON a.id = at.article_id " +
-                    "WHERE at.tags IN :tag",
-            nativeQuery = true
-    )
-    List<Article> findByTagNative(@Param("tag") List<String> tag);
 }

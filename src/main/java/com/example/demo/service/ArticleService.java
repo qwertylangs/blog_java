@@ -36,8 +36,23 @@ public class ArticleService {
     private final UserRepository userRepository;
     private static final Logger LOGGER = LoggerFactory.getLogger(ArticleService.class);
 
-    public ArticlesResponse getAllArticles (PageRequest pageRequest, Long currentUserId) {
-        Page<Article> articlePage = articleRepository.findAll(pageRequest);
+    public ArticlesResponse getAllArticles (PageRequest pageRequest, Long currentUserId, String tagsStr) {
+        Page<Article> articlePage;
+
+        if (tagsStr != null && !tagsStr.isBlank()) {
+            Set<String> tags = Arrays.stream(tagsStr.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toSet());
+
+            if (tags.isEmpty()) {
+                articlePage = articleRepository.findAll(pageRequest);
+            } else {
+                articlePage = articleRepository.findByTagsList(tags, pageRequest);
+            }
+        } else {
+            articlePage = articleRepository.findAll(pageRequest);
+        }
 
 
         List<ArticleDTO> articles = articlePage.getContent().stream().map(article -> convertToArticleDTO(article, currentUserId)).toList();
@@ -87,7 +102,7 @@ public class ArticleService {
 
         articleRepository.delete(article);
     };
-@Contract(pure = true)
+
     private static ArticleDTO convertToArticleDTO(Article article, Long currentUserId) {
         return new ArticleDTO(
                 article.getId(),
@@ -182,23 +197,24 @@ public class ArticleService {
 
         return convertToArticleDTO(article, userId);
     }
-    @Transactional
-    public static List<ArticleDTO> findArticlesByTags(List<ArticleDTO> tags) {
-        List<Article> articlesPage;
 
-        if (tags == null || tags.isEmpty()) {
-
-            articlesPage = ArticleRepository
-
-        }
-        else {
-
-            articlesPage = articleRepository.findByAnyTagNative(tags);
-        }
-
-
-        return articlesPage.stream()
-                .map((Article t) ->ArticleDTO.getTitle())
-                .collect(Collectors.toList());
-    }
+//    @Transactional
+//    public static List<ArticleDTO> findArticlesByTags(List<ArticleDTO> tags) {
+//        List<Article> articlesPage;
+//
+//        if (tags == null || tags.isEmpty()) {
+//
+//            articlesPage = ArticleRepository
+//
+//        }
+//        else {
+//
+//            articlesPage = articleRepository.findByAnyTagNative(tags);
+//        }
+//
+//
+//        return articlesPage.stream()
+//                .map((Article t) ->ArticleDTO.getTitle())
+//                .collect(Collectors.toList());
+//    }
 }
