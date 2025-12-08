@@ -24,6 +24,10 @@ jwt:
 
 logging:
   level:
+    org.springframework: DEBUG
+    org.hibernate: DEBUG
+    org.springframework.boot: INFO
+    com.yourpackage: DEBUG
     org:
       springframework:
         security: DEBUG

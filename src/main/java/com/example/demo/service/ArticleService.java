@@ -9,23 +9,27 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.service.Auth.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
+import static java.util.stream.StreamSupport.stream;
 
 @Service
 @RequiredArgsConstructor
 public class ArticleService {
+    @Autowired
     private final ArticleRepository articleRepository;
     private final TestRepository testRepository;
     private final UserService userService;
@@ -83,8 +87,8 @@ public class ArticleService {
 
         articleRepository.delete(article);
     };
-
-    private ArticleDTO convertToArticleDTO(Article article, Long currentUserId) {
+@Contract(pure = true)
+    private static ArticleDTO convertToArticleDTO(Article article, Long currentUserId) {
         return new ArticleDTO(
                 article.getId(),
                 article.getTitle(),
@@ -106,7 +110,7 @@ public class ArticleService {
         );
     }
 
-    private boolean isFavoritedByUser(Article article, Long userId) {
+    private static boolean isFavoritedByUser(Article article, Long userId) {
         if (userId == null) return false;
         return article.getLikedByUsers().stream()
                 .anyMatch(user ->  user.getId().equals(userId));
@@ -178,5 +182,23 @@ public class ArticleService {
 
         return convertToArticleDTO(article, userId);
     }
+    @Transactional
+    public static List<ArticleDTO> findArticlesByTags(List<ArticleDTO> tags) {
+        List<Article> articlesPage;
 
+        if (tags == null || tags.isEmpty()) {
+
+            articlesPage = ArticleRepository
+
+        }
+        else {
+
+            articlesPage = articleRepository.findByAnyTagNative(tags);
+        }
+
+
+        return articlesPage.stream()
+                .map((Article t) ->ArticleDTO.getTitle())
+                .collect(Collectors.toList());
+    }
 }

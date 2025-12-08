@@ -3,8 +3,12 @@ package com.example.demo.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.query.NativeQuery;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
