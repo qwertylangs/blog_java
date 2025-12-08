@@ -198,23 +198,5 @@ public class ArticleService {
         return convertToArticleDTO(article, userId);
     }
 
-//    @Transactional
-//    public static List<ArticleDTO> findArticlesByTags(List<ArticleDTO> tags) {
-//        List<Article> articlesPage;
-//
-//        if (tags == null || tags.isEmpty()) {
-//
-//            articlesPage = ArticleRepository
-//
-//        }
-//        else {
-//
-//            articlesPage = articleRepository.findByAnyTagNative(tags);
-//        }
-//
-//
-//        return articlesPage.stream()
-//                .map((Article t) ->ArticleDTO.getTitle())
-//                .collect(Collectors.toList());
-//    }
+
 }

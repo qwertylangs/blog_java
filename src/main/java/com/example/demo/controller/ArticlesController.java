@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,11 +31,20 @@ public class ArticlesController {
     public ResponseEntity<ArticlesResponse> getAllArticles(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String tags
+            @RequestParam(required = false) String tags,
+            @RequestParam(defaultValue = "DESC") Sort.Direction sortDirection
     )
     {
+
         UserDto currentUser = userService.getCurrentUser();
-        Sort sort = Sort.by("createdAt").descending().and(Sort.by("id").descending());
+
+        Sort sort;
+        if (sortDirection == Sort.Direction.ASC) {
+            sort = Sort.by("createdAt").ascending().and(Sort.by("id").ascending());
+        } else {
+            sort = Sort.by("createdAt").descending().and(Sort.by("id").descending());
+        }
+
         PageRequest pageable = PageRequest.of(page, size, sort);
 
         return ResponseEntity.ok().body(articleService.getAllArticles(pageable, currentUser != null ? currentUser.getId() : null, tags));
@@ -116,40 +126,5 @@ public class ArticlesController {
         ArticleDTO response = articleService.unfavoriteArticle(id, currentUser.getId());
         return ResponseEntity.ok(response);
     }
-//    @GetMapping("/by-Any-tags/{tagNames}")
-//    public ResponseEntity<List<ArticleDTO>> getPostsByAnyTag(
-//            @PathVariable List<ArticleDTO> tagNames,
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "20") int size,
-//            @RequestParam(defaultValue = "createdAt,desc") String[] sort) {
-//
-//        Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
-//        List<ArticleDTO> posts = ArticleService.findArticlesByTags(tagNames);
-//
-//        return ResponseEntity.ok(posts);
-//    }
-//    @GetMapping("/Count-by-tag/{tagName}")
-//    public ResponseEntity<Page<ArticleDTO>> getCountByTag(
-//            @PathVariable String tagName,
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "20") int size,
-//            @RequestParam(defaultValue = "createdAt,desc") String[] sort) {
-//
-//        Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
-//        Page<ArticleDTO> posts = ArticleService.getCountArticlesByTag(tagName, pageable);
-//
-//        return ResponseEntity.ok(posts);
-//    }
-//    @GetMapping("/by-tag/{tagName}")
-//    public ResponseEntity<Page<ArticleDTO>> getPostsByTag(
-//            @PathVariable String tagName,
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "20") int size,
-//            @RequestParam(defaultValue = "createdAt,desc") String[] sort) {
-//
-//        Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
-//        Page<ArticleDTO> posts = ArticleService.getArticleByTag(tagName, pageable);
-//
-//        return ResponseEntity.ok(posts);
-//    }
+
 }
