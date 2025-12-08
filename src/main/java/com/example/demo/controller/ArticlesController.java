@@ -9,11 +9,16 @@ import com.example.demo.service.ArticleService;
 import com.example.demo.service.Auth.UserService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/articles")
@@ -25,24 +30,35 @@ public class ArticlesController {
     @GetMapping
     public ResponseEntity<ArticlesResponse> getAllArticles(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String tags,
+            @RequestParam(defaultValue = "DESC") Sort.Direction sortDirection
     )
     {
+
         UserDto currentUser = userService.getCurrentUser();
-        Sort sort = Sort.by("createdAt").descending().and(Sort.by("id").descending());
+
+        Sort sort;
+        if (sortDirection == Sort.Direction.ASC) {
+            sort = Sort.by("createdAt").ascending().and(Sort.by("id").ascending());
+        } else {
+            sort = Sort.by("createdAt").descending().and(Sort.by("id").descending());
+        }
+
         PageRequest pageable = PageRequest.of(page, size, sort);
 
-        return ResponseEntity.ok().body(articleService.getAllArticles(pageable, currentUser != null ? currentUser.getId() : null));
+        return ResponseEntity.ok().body(articleService.getAllArticles(pageable, currentUser != null ? currentUser.getId() : null, tags));
     }
 
     @GetMapping("/anonym")
     public ResponseEntity<ArticlesResponse> getAnonymArticle(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String tag
     ) {
         Sort sort = Sort.by("createdAt").descending().and(Sort.by("id").descending());
         PageRequest pageable = PageRequest.of(page, size, sort);
-        return ResponseEntity.ok().body(articleService.getAllArticles(pageable, null));
+        return ResponseEntity.ok().body(articleService.getAllArticles(pageable, null, tag));
     }
 
     @GetMapping("/anonym/{id}")
@@ -110,4 +126,5 @@ public class ArticlesController {
         ArticleDTO response = articleService.unfavoriteArticle(id, currentUser.getId());
         return ResponseEntity.ok(response);
     }
+
 }

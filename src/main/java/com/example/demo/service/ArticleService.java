@@ -9,31 +9,50 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.service.Auth.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
+import static java.util.stream.StreamSupport.stream;
 
 @Service
 @RequiredArgsConstructor
 public class ArticleService {
+    @Autowired
     private final ArticleRepository articleRepository;
     private final TestRepository testRepository;
     private final UserService userService;
     private final UserRepository userRepository;
     private static final Logger LOGGER = LoggerFactory.getLogger(ArticleService.class);
 
-    public ArticlesResponse getAllArticles (PageRequest pageRequest, Long currentUserId) {
-        Page<Article> articlePage = articleRepository.findAll(pageRequest);
+    public ArticlesResponse getAllArticles (PageRequest pageRequest, Long currentUserId, String tagsStr) {
+        Page<Article> articlePage;
+
+        if (tagsStr != null && !tagsStr.isBlank()) {
+            Set<String> tags = Arrays.stream(tagsStr.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toSet());
+
+            if (tags.isEmpty()) {
+                articlePage = articleRepository.findAll(pageRequest);
+            } else {
+                articlePage = articleRepository.findByTagsList(tags, pageRequest);
+            }
+        } else {
+            articlePage = articleRepository.findAll(pageRequest);
+        }
 
 
         List<ArticleDTO> articles = articlePage.getContent().stream().map(article -> convertToArticleDTO(article, currentUserId)).toList();
@@ -84,7 +103,7 @@ public class ArticleService {
         articleRepository.delete(article);
     };
 
-    private ArticleDTO convertToArticleDTO(Article article, Long currentUserId) {
+    private static ArticleDTO convertToArticleDTO(Article article, Long currentUserId) {
         return new ArticleDTO(
                 article.getId(),
                 article.getTitle(),
@@ -106,7 +125,7 @@ public class ArticleService {
         );
     }
 
-    private boolean isFavoritedByUser(Article article, Long userId) {
+    private static boolean isFavoritedByUser(Article article, Long userId) {
         if (userId == null) return false;
         return article.getLikedByUsers().stream()
                 .anyMatch(user ->  user.getId().equals(userId));
@@ -178,5 +197,6 @@ public class ArticleService {
 
         return convertToArticleDTO(article, userId);
     }
+
 
 }
