@@ -3,22 +3,16 @@ package com.example.demo.controller;
 import com.example.demo.dtos.ArticleDTO;
 import com.example.demo.dtos.ArticlesResponse;
 import com.example.demo.dtos.CreateArticleRequest;
-import com.example.demo.dtos.UpdateArticleRequest;
+import com.example.demo.commentDTOs.UpdateArticleRequest;
 import com.example.demo.dtos.auth.UserDto;
 import com.example.demo.service.ArticleService;
 import com.example.demo.service.Auth.UserService;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/articles")

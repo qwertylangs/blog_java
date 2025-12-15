@@ -33,9 +33,7 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false) // соответствует user_id в базе
-    private MyUser user;
+    private MyUser author;
 
-    @Column(name = "author_username", nullable = false)
-    private String username;
 
 }

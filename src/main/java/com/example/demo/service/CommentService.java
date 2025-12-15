@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
-import com.example.demo.dtos.CommentDTO;
-import com.example.demo.dtos.CreateCommentRequest;
+import com.example.demo.commentDTOs.CommentDTO;
+import com.example.demo.commentDTOs.CreateCommentRequest;
 import com.example.demo.dtos.auth.UpdateCommentRequest;
 import com.example.demo.mapper.CommentMapper;
 import com.example.demo.model.Article;
@@ -14,11 +14,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
 
 
 
@@ -30,20 +30,28 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final ArticleRepository articleRepository;
     private final CommentMapper commentMapper;
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
     @Transactional
     public CommentDTO createComment(Long article_id, CreateCommentRequest request) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+
 
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED, "User is not logged in");
+                    HttpStatus.UNAUTHORIZED,
+                    "User is not authenticated"
+            );
         }
 
         String username = authentication.getName();
 
         MyUser user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "User not found"));
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "User not found"
+                    ));
+
 
         Article article = articleRepository.findById(article_id)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -53,8 +61,8 @@ public class CommentService {
         Comment comment = new Comment();
         comment.setBody(request.getBody());
         comment.setArticle(article);
-        comment.setUsername(username);
-        comment.setUser(user);
+        comment.setAuthor(user);
+
 
         Comment savedComment = commentRepository.save(comment);
 
@@ -71,19 +79,29 @@ public class CommentService {
 Page comments =commentRepository.findByArticleId(article_id,pageable);
         return commentMapper.toPageDTO(comments);
     }
+
     @Transactional
     public CommentDTO updateComment(Long commentId, UpdateCommentRequest request, Long article_id) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cummeant is not found with id: " + commentId));
 
 
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED, "User is not logged in");
+                    HttpStatus.UNAUTHORIZED,
+                    "User is not authenticated"
+            );
         }
 
+
         String username = authentication.getName();
+
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Cummeant is not found with id: " + commentId));
+
+
 
         MyUser user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -93,8 +111,11 @@ Page comments =commentRepository.findByArticleId(article_id,pageable);
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Article not found"));
 
-        if (!comment.getUsername().equals(username)){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to update this comment");
+        if (!comment.getAuthor().getId().equals(user.getId())){
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "You are not authorized to modify this comment"
+            );
         }
 
         comment.setBody(request.getBody());
@@ -104,6 +125,18 @@ Page comments =commentRepository.findByArticleId(article_id,pageable);
 
     @Transactional
     public void deleteComment(Long articleId, Long commentId) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "User is not authenticated"
+            );
+        }
+
+
+        String username = authentication.getName();
 
 
         if (!articleRepository.existsById(articleId)) {
@@ -111,12 +144,6 @@ Page comments =commentRepository.findByArticleId(article_id,pageable);
                     HttpStatus.NOT_FOUND, "Article is not found with id: " + articleId);
         }
 
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED, "User is not logged in");
-        }
-
-        String username = authentication.getName();
 
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -126,13 +153,27 @@ Page comments =commentRepository.findByArticleId(article_id,pageable);
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, "Cummeant is not belongs with this article,FUCKIN BUSTARD");
         }
+        MyUser user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "User not found"));
 
-        if (!comment.getUsername().equals(username)){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to delete this cumment");
+        if (!comment.getAuthor().getId().equals(user.getId())){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "You don't have permission to delete this cumment");
         }
 
         commentRepository.delete(comment);
     }
 
-    
+    @Transactional
+    public Long countByArticleId(Long articleId) {
+
+
+        if (!articleRepository.existsById(articleId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Article not found with id: " + articleId);
+        }
+        Long count = commentRepository.countByArticleId(articleId);
+        return count;
+    }
 }

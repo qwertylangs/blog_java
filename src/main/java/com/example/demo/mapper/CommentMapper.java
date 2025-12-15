@@ -1,6 +1,6 @@
 package com.example.demo.mapper;
 
-import com.example.demo.dtos.CommentDTO;
+import com.example.demo.commentDTOs.CommentDTO;
 import com.example.demo.model.Comment;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
@@ -27,7 +27,7 @@ public class CommentMapper {
         }
 
 
-            dto.setUsername(comment.getUsername());
+            dto.setUsername(comment.getAuthor().getUsername());
 
 
         return dto;

@@ -1,8 +1,8 @@
 package com.example.demo.controller;
 
 
-import com.example.demo.dtos.CommentDTO;
-import com.example.demo.dtos.CreateCommentRequest;
+import com.example.demo.commentDTOs.CommentDTO;
+import com.example.demo.commentDTOs.CreateCommentRequest;
 import com.example.demo.dtos.auth.UpdateCommentRequest;
 import com.example.demo.service.CommentService;
 import jakarta.validation.Valid;
@@ -27,7 +27,7 @@ public class CommentController {
     private CommentService commentService;
 
     @PostMapping
-    public ResponseEntity<?> createComment(
+    public ResponseEntity<CommentDTO> createComment(
             @PathVariable long article_id,
             @Valid @RequestBody CreateCommentRequest request
             )
@@ -59,7 +59,7 @@ public class CommentController {
 return ResponseEntity.ok(commentsPage)  ;
     }
     @PutMapping("/{commentId}")
-    public ResponseEntity<?> updateComment(
+    public ResponseEntity<CommentDTO> updateComment(
             @PathVariable long article_id,
             @PathVariable long commentId,
             @Valid @RequestBody UpdateCommentRequest request
@@ -74,7 +74,7 @@ return ResponseEntity.ok(commentsPage)  ;
     }
 
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<?> deleteComment(
+    public ResponseEntity<CommentDTO> deleteComment(
             @PathVariable long article_id,
             @PathVariable long commentId
     ) {
@@ -86,5 +86,13 @@ return ResponseEntity.ok(commentsPage)  ;
         return ResponseEntity.noContent().build();
 }
 
+    @GetMapping("/count")
+    public ResponseEntity<Long> getCountById(
+            @PathVariable long article_id
+    )
+    {
+        Long count =  commentService.countByArticleId(article_id);
 
+        return ResponseEntity.ok(count) ;
+    }
 }
