@@ -1,8 +1,8 @@
 package com.example.demo.controller;
 
 
-import com.example.demo.commentDTOs.CommentDTO;
-import com.example.demo.commentDTOs.CreateCommentRequest;
+import com.example.demo.dtos.commentDTOs.CommentDTO;
+import com.example.demo.dtos.commentDTOs.CreateCommentRequest;
 import com.example.demo.dtos.auth.UpdateCommentRequest;
 import com.example.demo.service.CommentService;
 import jakarta.validation.Valid;

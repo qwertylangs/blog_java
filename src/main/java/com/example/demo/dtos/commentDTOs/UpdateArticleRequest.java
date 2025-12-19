@@ -1,4 +1,4 @@
-package com.example.demo.commentDTOs;
+package com.example.demo.dtos.commentDTOs;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

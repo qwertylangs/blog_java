@@ -3,7 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dtos.ArticleDTO;
 import com.example.demo.dtos.ArticlesResponse;
 import com.example.demo.dtos.CreateArticleRequest;
-import com.example.demo.commentDTOs.UpdateArticleRequest;
+import com.example.demo.dtos.commentDTOs.UpdateArticleRequest;
 import com.example.demo.dtos.auth.UserDto;
 import com.example.demo.service.ArticleService;
 import com.example.demo.service.Auth.UserService;

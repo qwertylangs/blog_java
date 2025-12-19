@@ -1,6 +1,6 @@
 package com.example.demo.mapper;
 
-import com.example.demo.commentDTOs.CommentDTO;
+import com.example.demo.dtos.commentDTOs.CommentDTO;
 import com.example.demo.model.Comment;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;

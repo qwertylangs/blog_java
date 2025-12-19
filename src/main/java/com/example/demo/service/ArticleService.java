@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.commentDTOs.UpdateArticleRequest;
+import com.example.demo.dtos.commentDTOs.UpdateArticleRequest;
 import com.example.demo.dtos.*;
 import com.example.demo.model.Article;
 import com.example.demo.model.MyUser;
