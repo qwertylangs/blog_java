@@ -37,10 +37,6 @@ public class MyUser {
     )
     private Collection<Role> roles;
 
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<Article> articles = new ArrayList<>();
-
     @ManyToMany(mappedBy = "likedByUsers", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Article> likedArticles = new ArrayList<>();

@@ -53,7 +53,7 @@ public class UserService {
 
             throw new ConflictException("USER IS ALREADY EXISTS");
         }
-        if(username == null || username.isBlank()){
+        if(username == null && username.isBlank()){
 
             throw new ConflictException("USER-POLE IS EMPTY");
         }
@@ -61,7 +61,7 @@ public class UserService {
 
             throw new ConflictException("EMAIL IS ALREADY EXISTS");
         }
-        if(email == null || email.isBlank()){
+        if(email == null && email.isBlank()){
 
             throw new ConflictException("EMAIL-POLE IS EMPTY");
         }

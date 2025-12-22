@@ -52,6 +52,22 @@ public class Article {
     )
     private List<MyUser> likedByUsers = new ArrayList<>();
 
+
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
+    @OrderBy("createdAt DESC")
+    private List<Comment> comments = new ArrayList<>();
+
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
+        comment.setArticle(this);
+    }
+
+    public void removeComment(Comment comment) {
+        comments.remove(comment);
+        comment.setArticle(null);
+    }
+
     @CreationTimestamp
     private LocalDate createdAt;
     @UpdateTimestamp

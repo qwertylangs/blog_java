@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dtos.commentDTOs.UpdateArticleRequest;
 import com.example.demo.dtos.*;
 import com.example.demo.model.Article;
 import com.example.demo.model.MyUser;
@@ -9,13 +10,11 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.service.Auth.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;

@@ -24,5 +24,6 @@ public class ArticleDTO {
     private List<String> likedByUsers;
     private ArticleCreator author;
 
+
 }
 
