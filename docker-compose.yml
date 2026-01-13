@@ -6,13 +6,13 @@ services:
     image: postgres:18-alpine
     container_name: postgres-db
     environment:
-      - POSTGRES_USER=blog_app
-      - POSTGRES_PASSWORD=123456
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=blog_db
     ports:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - app-network
     healthcheck:
